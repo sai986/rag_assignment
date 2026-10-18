@@ -88,6 +88,7 @@ The advanced pipeline starts from the same top 10 baseline candidates. It then s
 - Latency output: `outputs/latency_results.csv`
 - Prompt output: `outputs/llm_prompts.csv`
 - Prompt structure: same prompt is used for baseline and re-ranked answer generation
+- Answer output: `outputs/llm_answers.csv` after running the exported prompts through the chosen LLM
 
 Initial re-ranking over 8 candidate queries showed that the cross-encoder sometimes promoted chunks originally ranked outside the baseline top 3. In the current run, some chunks in the re-ranked top 3 originally appeared at baseline ranks 4, 5, 6, 7, and 10.
 
@@ -191,7 +192,7 @@ Initial latency over 8 candidate queries:
 
 TODO: Replace or extend this with the final selected failure queries.
 
-For the two selected failure queries, the prompts have been exported to `outputs/llm_prompts.csv`. The local environment did not have an LLM API key or local LLM runtime configured, so the answer text still needs to be generated with the chosen LLM before final submission.
+For the two selected failure queries, the prompts have been exported to `outputs/llm_prompts.csv`. The notebook also creates an `outputs/llm_answers.csv` template. The same LLM and decoding settings should be used for both the baseline and re-ranked prompts. API keys or provider credentials should not be stored in the notebook, report, or repository.
 
 ## 7. Scaling Question
 

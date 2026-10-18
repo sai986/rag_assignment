@@ -1,0 +1,5 @@
+query,pipeline,context_chunk_ids,model,generation_seconds,answer
+What obligations apply to providers of general-purpose AI models with systemic risk?,baseline,"C0052, C0050, C0053",TODO,TODO,TODO
+What obligations apply to providers of general-purpose AI models with systemic risk?,reranked,"C0119, C0053, C0070",TODO,TODO,TODO
+When can law enforcement use real-time remote biometric identification in public spaces?,baseline,"C0019, C0017, C0045",TODO,TODO,TODO
+When can law enforcement use real-time remote biometric identification in public spaces?,reranked,"C0019, C0083, C0020",TODO,TODO,TODO

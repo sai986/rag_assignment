@@ -13,6 +13,7 @@
 - [x] Created living report draft at `report/report.md`.
 - [x] Updated report with baseline retrieval, cross-encoder re-ranking, rank-shift candidates, and latency.
 - [x] Exported final baseline and re-ranked LLM prompts to `outputs/llm_prompts.csv`.
+- [x] Added generic answer-template cells to the notebook.
 - [ ] Implement the notebook pipeline.
 - [ ] Run retrieval and re-ranking experiments.
 - [ ] Identify at least two strong failure queries.
@@ -369,6 +370,14 @@ Possible LLM choices:
 - Ollama local model.
 
 Design decision: retrieval and re-ranking are the core assignment; answer-generation LLM choice is secondary as long as the prompt is identical.
+
+Actual answer-generation setup:
+
+- Prompts are exported to `outputs/llm_prompts.csv`.
+- Answer template is created at `outputs/llm_answers.csv`.
+- The same LLM and decoding settings should be used for both baseline and re-ranked prompts.
+- API keys or provider credentials should not be stored in the notebook or repository.
+- Current status: answer generation still needs to be run with the chosen LLM before final report completion.
 
 ## Phase 10: Report
 

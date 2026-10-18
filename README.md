@@ -47,6 +47,16 @@ cross-encoder/ms-marco-MiniLM-L-6-v2
 
 The notebook is configured to load these models from the local `models/` directory.
 
+## Answer Generation
+
+The notebook exports prompts for the final LLM answer-comparison step. Run the exported prompts through the same LLM and save the answers in:
+
+```text
+outputs/llm_answers.csv
+```
+
+Do not store API keys or provider credentials in the notebook or repository.
+
 ## Current Status
 
 Implemented:
@@ -57,7 +67,7 @@ Implemented:
 - Baseline dense retrieval with `all-MiniLM-L6-v2`.
 - Cross-encoder re-ranking with `ms-marco-MiniLM-L-6-v2`.
 - Initial rank-shift and latency outputs.
-- Prompt export for selected failure queries.
+- Prompt export and answer-template generation for selected failure queries.
 
 Pending:
 
