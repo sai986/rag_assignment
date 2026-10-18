@@ -111,7 +111,7 @@ The same template is used for both pipelines. Only the three retrieved passages 
 
 ## 5. Failure Query Analysis
 
-This section currently records retrieval-level rank shifts. LLM answer comparison will be added after answer generation is implemented.
+This section records retrieval-level rank shifts and compares the answers generated from the baseline and re-ranked contexts.
 
 ### Candidate Rank Shifts
 

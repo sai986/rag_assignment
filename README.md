@@ -67,10 +67,5 @@ Implemented:
 - Baseline dense retrieval with `all-MiniLM-L6-v2`.
 - Cross-encoder re-ranking with `ms-marco-MiniLM-L-6-v2`.
 - Initial rank-shift and latency outputs.
-- Prompt export and answer-template generation for selected failure queries.
-
-Pending:
-
-- LLM answer generation.
-- Final failure-query selection.
-- Final report polishing.
+- Prompt export and answer generation for selected failure queries.
+- Final failure-query analysis and report draft.
