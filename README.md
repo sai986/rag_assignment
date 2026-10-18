@@ -12,6 +12,7 @@ This repository contains a RAG experiment over the EU Artificial Intelligence Ac
 - `outputs/baseline_retrieval_results.csv` - top-10 baseline retrieval results.
 - `outputs/reranked_results.csv` - cross-encoder re-ranked results.
 - `outputs/latency_results.csv` - retrieval and re-ranking latency.
+- `outputs/llm_prompts.csv` - baseline and re-ranked prompts for the selected failure queries.
 - `report/report.md` - living report draft.
 - `PLAN.md` - progress tracker.
 
@@ -56,10 +57,10 @@ Implemented:
 - Baseline dense retrieval with `all-MiniLM-L6-v2`.
 - Cross-encoder re-ranking with `ms-marco-MiniLM-L-6-v2`.
 - Initial rank-shift and latency outputs.
+- Prompt export for selected failure queries.
 
 Pending:
 
 - LLM answer generation.
 - Final failure-query selection.
 - Final report polishing.
-

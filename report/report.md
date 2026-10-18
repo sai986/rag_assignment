@@ -86,9 +86,27 @@ The advanced pipeline starts from the same top 10 baseline candidates. It then s
 - Re-ranked chunks to be sent to LLM: top 3
 - Re-ranked output: `outputs/reranked_results.csv`
 - Latency output: `outputs/latency_results.csv`
-- Prompt structure: same prompt will be used for baseline and re-ranked answer generation
+- Prompt output: `outputs/llm_prompts.csv`
+- Prompt structure: same prompt is used for baseline and re-ranked answer generation
 
 Initial re-ranking over 8 candidate queries showed that the cross-encoder sometimes promoted chunks originally ranked outside the baseline top 3. In the current run, some chunks in the re-ranked top 3 originally appeared at baseline ranks 4, 5, 6, 7, and 10.
+
+The answer-generation prompt template is:
+
+```text
+Answer using only the numbered passages below.
+If the passages do not contain the answer, say that the document does not provide enough information.
+Cite every factual claim using passage ids like [S1], [S2].
+
+Context:
+[S1] ...
+[S2] ...
+[S3] ...
+
+Question: ...
+```
+
+The same template is used for both pipelines. Only the three retrieved passages change.
 
 ## 5. Failure Query Analysis
 
@@ -130,8 +148,10 @@ Answer comparison:
 
 | Pipeline | Observation |
 |---|---|
-| Baseline answer | TODO after LLM generation |
-| Re-ranked answer | TODO after LLM generation |
+| Baseline context | Uses chunks C0052, C0050, C0053. |
+| Re-ranked context | Uses chunks C0119, C0053, C0070. |
+| Baseline answer | TODO after running the exported baseline prompt through the LLM. |
+| Re-ranked answer | TODO after running the exported re-ranked prompt through the same LLM. |
 
 ### Failure Query 2
 
@@ -154,8 +174,10 @@ Answer comparison:
 
 | Pipeline | Observation |
 |---|---|
-| Baseline answer | TODO after LLM generation |
-| Re-ranked answer | TODO after LLM generation |
+| Baseline context | Uses chunks C0019, C0017, C0045. |
+| Re-ranked context | Uses chunks C0019, C0083, C0020. |
+| Baseline answer | TODO after running the exported baseline prompt through the LLM. |
+| Re-ranked answer | TODO after running the exported re-ranked prompt through the same LLM. |
 
 ## 6. Latency Profiling
 
@@ -168,6 +190,8 @@ Initial latency over 8 candidate queries:
 | Maximum | 0.012 s | 1.580 s | 1.591 s |
 
 TODO: Replace or extend this with the final selected failure queries.
+
+For the two selected failure queries, the prompts have been exported to `outputs/llm_prompts.csv`. The local environment did not have an LLM API key or local LLM runtime configured, so the answer text still needs to be generated with the chosen LLM before final submission.
 
 ## 7. Scaling Question
 

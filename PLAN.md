@@ -12,6 +12,7 @@
 - [x] Generated `outputs/pages.csv` with 144 page records.
 - [x] Created living report draft at `report/report.md`.
 - [x] Updated report with baseline retrieval, cross-encoder re-ranking, rank-shift candidates, and latency.
+- [x] Exported final baseline and re-ranked LLM prompts to `outputs/llm_prompts.csv`.
 - [ ] Implement the notebook pipeline.
 - [ ] Run retrieval and re-ranking experiments.
 - [ ] Identify at least two strong failure queries.
@@ -257,12 +258,13 @@ Rationale: bi-encoder is fast and suitable for recall; cross-encoder is slower b
 
 ## Phase 6: Prompt Design
 
-Status: not started.
+Status: complete for prompt export.
 
-- [ ] Use one fixed prompt template for both pipelines.
-- [ ] Number retrieved passages as `[S1]`, `[S2]`, `[S3]`.
-- [ ] Require citations after factual claims.
-- [ ] Include a refusal clause when passages do not answer the question.
+- [x] Use one fixed prompt template for both pipelines.
+- [x] Number retrieved passages as `[S1]`, `[S2]`, `[S3]`.
+- [x] Require citations after factual claims.
+- [x] Include a refusal clause when passages do not answer the question.
+- [x] Export baseline and re-ranked prompts for the two selected failure queries.
 
 Draft prompt:
 

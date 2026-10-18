@@ -1,9 +1,9 @@
 query,baseline_retrieval_seconds,reranking_seconds,total_reranking_pipeline_seconds
-Which AI practices are prohibited because they manipulate a person's behaviour?,0.011378099967259914,1.3582480000331998,1.3696261000004597
-When can law enforcement use real-time remote biometric identification in public spaces?,0.011525200039613992,1.3272338000242598,1.3387590000638738
-Which AI systems used in education and vocational training are high-risk?,0.00963800004683435,1.3264502999954857,1.33608830004232
-What transparency obligations apply when users interact with an AI system?,0.009772899968083948,1.3349902999470942,1.3447631999151781
-What disclosure is required for AI-generated deep fake content?,0.009644499979913235,1.3424181999871507,1.352062699967064
-What obligations apply to providers of general-purpose AI models with systemic risk?,0.010837599984370172,1.5102340999874286,1.5210716999717988
-What criteria are used to designate general-purpose AI models with systemic risk?,0.01090630004182458,1.5802769999718294,1.591183300013654
-What penalties apply for non-compliance with prohibited AI practices?,0.008974800002761185,1.5724979999940842,1.5814727999968454
+Which AI practices are prohibited because they manipulate a person's behaviour?,0.013909899978898466,1.5208523999899626,1.534762299968861
+When can law enforcement use real-time remote biometric identification in public spaces?,0.01290490000974387,1.5137565999757499,1.5266614999854937
+Which AI systems used in education and vocational training are high-risk?,0.011168399942107499,1.5034578000195324,1.51462619996164
+What transparency obligations apply when users interact with an AI system?,0.010705800028517842,1.522087899968028,1.532793699996546
+What disclosure is required for AI-generated deep fake content?,0.010696299956180155,1.5310730999335647,1.5417693998897448
+What obligations apply to providers of general-purpose AI models with systemic risk?,0.012493499903939664,1.6240674000000581,1.6365608999039978
+What criteria are used to designate general-purpose AI models with systemic risk?,0.012473600101657212,1.8746092000510544,1.8870828001527116
+What penalties apply for non-compliance with prohibited AI practices?,0.010908700060099363,2.0150183000368997,2.025927000096999
