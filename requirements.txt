@@ -1,0 +1,8 @@
+pandas
+numpy
+pymupdf
+sentence-transformers
+scikit-learn
+torch
+nbformat
+
