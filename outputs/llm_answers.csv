@@ -1,5 +1,49 @@
 query,pipeline,context_chunk_ids,model,generation_seconds,answer
-What obligations apply to providers of general-purpose AI models with systemic risk?,baseline,"C0052, C0050, C0053",TODO,TODO,TODO
-What obligations apply to providers of general-purpose AI models with systemic risk?,reranked,"C0119, C0053, C0070",TODO,TODO,TODO
-When can law enforcement use real-time remote biometric identification in public spaces?,baseline,"C0019, C0017, C0045",TODO,TODO,TODO
-When can law enforcement use real-time remote biometric identification in public spaces?,reranked,"C0019, C0083, C0020",TODO,TODO,TODO
+What obligations apply to providers of general-purpose AI models with systemic risk?,baseline,"C0052, C0050, C0053",chosen_llm,5.511,"Providers of general-purpose AI models with systemic risk are subject to the following obligations:
+
+*   **Risk Identification and Mitigation:** They must identify and mitigate systemic risks [S1]. This includes continuously assessing and mitigating these risks through measures such as implementing post-market monitoring, cooperating with relevant actors along the AI value chain, taking appropriate measures throughout the model's lifecycle, and establishing risk-management policies (e.g., governance processes and accountability) [S1, S3].
+*   **Model Evaluations:** Providers are required to perform necessary model evaluations, specifically prior to the first placing of the model on the market [S1, S3]. This includes conducting and documenting adversarial testing, which may be done via internal or independent external testing [S1, S3].
+*   **Cybersecurity Protection:** They must ensure an adequate level of cybersecurity protection for the model and, if appropriate, its physical infrastructure throughout the model lifecycle [S3]. Protection against attacks or malicious use should consider unauthorized releases, accidental model leakage, model theft, unauthorized access, and the circumvention of safety measures [S3]. Such protection can be facilitated by securing algorithms, data sets, servers, and model weights using technical solutions, cyber and physical access controls, specific cybersecurity policies, and operational security measures for information security [S3].
+*   **Incident Reporting:** If the use or development of the model causes a serious incident despite efforts to prevent risks, the provider must track the incident without undue delay and report any possible corrective measures and relevant information to national competent authorities and the Commission [S3].
+*   **General Obligations:** They are subject to these additional requirements in addition to the standard obligations provided for all providers of general-purpose AI models [S1]. These obligations apply regardless of whether the model is embedded in a product/AI system or provided as a standalone model [S1]."
+What obligations apply to providers of general-purpose AI models with systemic risk?,reranked,"C0119, C0053, C0070",chosen_llm,3.947,"Providers of general-purpose AI models with systemic risk have the following obligations:
+
+*   **Risk Assessment and Mitigation:** Providers should continuously assess and mitigate systemic risks [S2]. This includes:
+    *   Implementing risk-management policies, such as governance processes and accountability [S2].
+    *   Implementing post-market monitoring [S2].
+    *   Taking appropriate measures across the entire model lifecycle [S2].
+    *   Cooperating with relevant actors along the AI value chain [S2].
+*   **Incident Reporting:** If a model's development or use causes a serious incident despite efforts to prevent risks, the provider must keep track of the incident and report relevant information and possible corrective measures to national competent authorities and the Commission without undue delay [S2].
+*   **Cybersecurity:** Providers must ensure an adequate level of cybersecurity protection for the model and its physical infrastructure throughout the model lifecycle [S2]. This protection should address unauthorized releases, accidental model leakage, circumvention of safety measures, model theft, unauthorized access, and cyberattacks [S2].
+*   **Demonstrating Compliance:** To demonstrate compliance with obligations, providers may:
+    *   Rely on codes of practice (until a harmonised standard is published) [S1], [S2].
+    *   Comply with European harmonised standards, which grants a presumption of conformity to the extent those standards cover the obligations [S1], [S2].
+    *   Demonstrate alternative adequate means of compliance for assessment by the Commission if they do not comply with a European harmonised standard or adhere to an approved code of practice [S1], [S2]."
+When can law enforcement use real-time remote biometric identification in public spaces?,baseline,"C0019, C0017, C0045",chosen_llm,5.166,"Law enforcement may use ""real-time"" remote biometric identification in publicly accessible spaces only in the following circumstances and under the following conditions:
+
+**Permitted Situations**
+Use is prohibited except in narrowly defined and exhaustively listed situations where it is strictly necessary to achieve a substantial public interest that outweighs the risks [S2]. These situations include:
+*   Searching for certain victims of crime, including missing persons [S2].
+*   Addressing certain threats to the physical safety or life of natural persons or preventing a terrorist attack [S2].
+*   Identifying or localising perpetrators or suspects of criminal offences listed in an annex to the Regulation, provided those offences are punishable in the Member State by a detention order or custodial sentence for a maximum period of at least four years [S2].
+
+**Required Authorisations and Procedures**
+*   **Authorisation:** Use must be subject to a binding, express, and specific authorisation from an independent administrative authority of a Member State or a judicial authority [S1].
+*   **Timing of Authorisation:** Authorisation should generally be obtained before the system is used [S1]. In urgent situations where obtaining prior authorisation is ""effectively and objectively impossible,"" the authority must request authorisation without undue delay and no later than 24 hours after use begins [S1]. If this request is rejected, use must cease immediately and related data must be deleted [S1].
+*   **Impact Assessment and Registration:** The relevant law enforcement authority must complete a fundamental rights impact assessment and, unless otherwise provided in the Regulation, register the system in the database [S1].
+*   **Scope:** The use must be strictly necessary regarding the personal scope, geographic scope, and period of time, based on evidence or indications regarding perpetrators, victims, or threats [S1].
+
+**Additional Requirements**
+*   **National Law:** Such use is only possible if the concerned Member State has expressly decided to allow it within its national law [S1].
+*   **Notifications:** The national data protection authority and the relevant market surveillance authority must be notified of each use [S1].
+*   **Limitations:** No decision producing an adverse legal effect on a person can be based solely on the output of the remote biometric identification system [S1]."
+When can law enforcement use real-time remote biometric identification in public spaces?,reranked,"C0019, C0083, C0020",chosen_llm,4.299,"Law enforcement may use real-time remote biometric identification systems in publicly accessible spaces under the following conditions:
+
+*   **General Requirements:** Use is authorized only if the law enforcement authority has registered the system in the EU database and completed a fundamental rights impact assessment [S1], [S2]. 
+*   **Authorisation:** Use must be subject to a binding decision and prior authorisation from a judicial authority or an independent administrative authority of the Member State [S1], [S2]. This authority grants authorisation only when satisfied by objective evidence or clear indications that the use is proportionate to and necessary for achieving a specified objective, and that it is strictly necessary regarding personal, geographic, and temporal scope [S2].
+*   **Urgency Exceptions:** In duly justified situations of urgency where obtaining prior authorisation is effectively and objectively impossible, use may commence without prior authorisation or EU database registration [S1], [S2]. In these cases:
+    *   The use must be restricted to the absolute minimum necessary [S1].
+    *   Authorisation must be requested without undue delay and no later than 24 hours after commencement [S1], [S2].
+    *   Registration in the EU database must be completed without undue delay [S2].
+*   **National Law:** Use is only possible if the concerned Member State has expressly provided for the possibility to authorise such use within its detailed national law [S1], [S3]. Member States may choose not to provide for this possibility at all or only for specific objectives [S1], [S3].
+*   **Notifications:** Each use must be notified to the national data protection authority and the relevant market surveillance authority [S1], [S2]."

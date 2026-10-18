@@ -88,7 +88,7 @@ The advanced pipeline starts from the same top 10 baseline candidates. It then s
 - Latency output: `outputs/latency_results.csv`
 - Prompt output: `outputs/llm_prompts.csv`
 - Prompt structure: same prompt is used for baseline and re-ranked answer generation
-- Answer output: `outputs/llm_answers.csv` after running the exported prompts through the chosen LLM
+- Answer output: `outputs/llm_answers.csv`
 
 Initial re-ranking over 8 candidate queries showed that the cross-encoder sometimes promoted chunks originally ranked outside the baseline top 3. In the current run, some chunks in the re-ranked top 3 originally appeared at baseline ranks 4, 5, 6, 7, and 10.
 
@@ -151,8 +151,10 @@ Answer comparison:
 |---|---|
 | Baseline context | Uses chunks C0052, C0050, C0053. |
 | Re-ranked context | Uses chunks C0119, C0053, C0070. |
-| Baseline answer | TODO after running the exported baseline prompt through the LLM. |
-| Re-ranked answer | TODO after running the exported re-ranked prompt through the same LLM. |
+| Baseline answer | The answer covered risk mitigation, model evaluation, cybersecurity, incident reporting, and general systemic-risk duties. It was useful, but it mainly relied on recital/background chunks and did not clearly separate direct obligations from supporting explanation. |
+| Re-ranked answer | The answer was more focused on provider obligations and compliance mechanisms. It included risk assessment and mitigation, incident reporting, cybersecurity, codes of practice, harmonised standards, and alternative means of demonstrating compliance. |
+
+Observation: re-ranking improved the context by moving C0119 from baseline rank 7 to rank 1 and C0070 from baseline rank 10 to rank 3. The generated answer became more specific about compliance routes and obligations rather than only summarising background rationale.
 
 ### Failure Query 2
 
@@ -177,8 +179,10 @@ Answer comparison:
 |---|---|
 | Baseline context | Uses chunks C0019, C0017, C0045. |
 | Re-ranked context | Uses chunks C0019, C0083, C0020. |
-| Baseline answer | TODO after running the exported baseline prompt through the LLM. |
-| Re-ranked answer | TODO after running the exported re-ranked prompt through the same LLM. |
+| Baseline answer | The answer correctly listed permitted situations, authorisation, urgency handling, scope limits, impact assessment, and national-law requirements. However, one baseline top-3 chunk was about post-remote biometric identification rather than the real-time public-space use asked in the query. |
+| Re-ranked answer | The answer focused more tightly on real-time remote biometric identification in publicly accessible spaces. It included fundamental-rights assessment, EU database registration, prior authorisation, urgency exceptions, national-law permission, and notifications. |
+
+Observation: re-ranking promoted C0083 from baseline rank 4 to rank 2 and C0020 from baseline rank 6 to rank 3. This replaced less central baseline context with chunks that directly addressed authorisation, registration, urgency exceptions, and Member State national-law conditions.
 
 ## 6. Latency Profiling
 
@@ -190,7 +194,12 @@ Initial latency over 8 candidate queries:
 | Minimum | 0.009 s | 1.326 s | 1.336 s |
 | Maximum | 0.012 s | 1.580 s | 1.591 s |
 
-TODO: Replace or extend this with the final selected failure queries.
+For the two selected failure queries:
+
+| Query | Baseline Retrieval Time | Re-ranking Time | Total Re-ranking Pipeline Time |
+|---|---:|---:|---:|
+| GPAI systemic-risk obligations | 0.012 s | 1.624 s | 1.637 s |
+| Real-time biometric identification by law enforcement | 0.013 s | 1.514 s | 1.527 s |
 
 For the two selected failure queries, the prompts have been exported to `outputs/llm_prompts.csv`. The notebook also creates an `outputs/llm_answers.csv` template. The same LLM and decoding settings should be used for both the baseline and re-ranked prompts. API keys or provider credentials should not be stored in the notebook, report, or repository.
 
@@ -202,4 +211,4 @@ The practical pattern is therefore two-stage retrieval. First, the bi-encoder ch
 
 ## 8. Conclusion
 
-TODO: Complete after experiments.
+The two-stage pipeline improved precision on the selected difficult queries. Dense retrieval was very fast and usually found relevant material somewhere in the top 10, but important chunks could remain outside the top 3. Cross-encoder re-ranking added about 1.5 seconds per query for 10 candidates, but it promoted more directly useful chunks into the context sent to the LLM. The result was stronger grounding for queries involving systemic-risk obligations and law-enforcement exceptions.

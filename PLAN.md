@@ -14,6 +14,8 @@
 - [x] Updated report with baseline retrieval, cross-encoder re-ranking, rank-shift candidates, and latency.
 - [x] Exported final baseline and re-ranked LLM prompts to `outputs/llm_prompts.csv`.
 - [x] Added generic answer-template cells to the notebook.
+- [x] Generated final LLM answers in `outputs/llm_answers.csv`.
+- [x] Updated report with answer comparisons and conclusion.
 - [ ] Implement the notebook pipeline.
 - [ ] Run retrieval and re-ranking experiments.
 - [ ] Identify at least two strong failure queries.
@@ -349,19 +351,20 @@ total_reranking_pipeline_seconds
 
 ## Phase 9: Answer Generation
 
-Status: not started.
+Status: complete for selected failure queries.
 
-- [ ] Choose answer-generation LLM.
-- [ ] Generate Answer 1 using baseline top 3 chunks.
-- [ ] Generate Answer 2 using re-ranked top 3 chunks.
-- [ ] Use the exact same prompt template for both answers.
-- [ ] Compare whether Answer 1:
+- [x] Choose answer-generation LLM.
+- [x] Generate Answer 1 using baseline top 3 chunks.
+- [x] Generate Answer 2 using re-ranked top 3 chunks.
+- [x] Use the exact same prompt template for both answers.
+- [x] Compare whether Answer 1:
   - hallucinates,
   - omits an important exception,
   - cites weak evidence,
   - gives a generic answer,
   - misstates a rule.
-- [ ] Compare whether Answer 2 improves grounding and specificity.
+- [x] Compare whether Answer 2 improves grounding and specificity.
+- [x] Compare Answer 1 and Answer 2 in the report.
 
 Possible LLM choices:
 
@@ -377,11 +380,11 @@ Actual answer-generation setup:
 - Answer template is created at `outputs/llm_answers.csv`.
 - The same LLM and decoding settings should be used for both baseline and re-ranked prompts.
 - API keys or provider credentials should not be stored in the notebook or repository.
-- Current status: answer generation still needs to be run with the chosen LLM before final report completion.
+- Current status: answer generation is complete for the two selected failure queries.
 
 ## Phase 10: Report
 
-Status: started.
+Status: complete for current experiment.
 
 The report should be concise and in our own words.
 
@@ -397,17 +400,19 @@ Suggested structure:
 
 Required content:
 
-- [ ] Explain bi-encoder vs cross-encoder.
-- [ ] Show at least two failure queries.
-- [ ] Show rank shifts, such as chunk moving from rank 8 to rank 1.
-- [ ] Compare Answer 1 and Answer 2.
-- [ ] Include latency table.
-- [ ] Explain why cross-encoders are not run over the whole document collection from the start.
+- [x] Explain bi-encoder vs cross-encoder.
+- [x] Show at least two failure queries.
+- [x] Show rank shifts, such as chunk moving from rank 8 to rank 1.
+- [x] Compare Answer 1 and Answer 2.
+- [x] Include latency table.
+- [x] Explain why cross-encoders are not run over the whole document collection from the start.
 - [x] Record document choice, extraction decision, header/footer cleanup, and chunking strategy.
 - [x] Add initial architecture comparison.
 - [x] Add initial rank-shift table.
 - [x] Add initial latency summary.
 - [x] Add scaling explanation draft.
+- [x] Add final answer comparison for two selected failure queries.
+- [x] Add conclusion.
 
 ## Phase 11: GitHub Submission
 
