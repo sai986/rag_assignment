@@ -54,13 +54,13 @@ The current chunking output is:
 | Chunks above 900 words | 0 |
 | Page-spanning chunks | 143 |
 
-I kept the chunks slightly large on purpose. Since this is a legal document, one rule often depends on conditions and exceptions nearby. Smaller chunks may retrieve only part of the rule and miss the qualification. One open item is that if the final answers look too broad, I can revisit this and try smaller chunks.
+I kept the chunks slightly large on purpose. Since this is a legal document, one rule often depends on conditions and exceptions nearby. Smaller chunks may retrieve only part of the rule and miss the qualification.
 
 ## 3. Architecture Comparison
 
-The baseline system uses a bi-encoder. In this setup, the query and each chunk are embedded separately. The chunk embeddings can be computed once and saved. At query time, only the query embedding is computed, and then cosine similarity is used to rank the chunks.
+The baseline system uses a bi-encoder. In this setup, the query and each chunk are embedded separately. The chunk embeddings are computed once and saved. At query time, only the query embedding is computed, and then cosine similarity is used to rank the chunks.
 
-The re-ranking system adds a cross-encoder after this first retrieval step. A cross-encoder reads the query and candidate chunk together, so it can judge the match more directly. The tradeoff is that it is slower, because it has to run once for every query-chunk pair. Because of that, I only use it on the top 10 candidates from the bi-encoder, not on the whole document.
+The re-ranking system adds a cross-encoder after this first retrieval step. A cross-encoder reads the query and candidate chunk together, so it can judge the match more directly. The tradeoff is that it is slower, because it has to run once for every query-chunk pair. Because of that, I only used it on the top 10 candidates from the bi-encoder, not on the whole document.
 
 ## 4. Retrieval Pipelines
 
@@ -68,7 +68,7 @@ Both pipelines use the same extracted text and the same chunks. The difference i
 
 ### Pipeline 1: Baseline Retrieval
 
-The baseline pipeline uses dense retrieval with `sentence-transformers/all-MiniLM-L6-v2`. I loaded the model from a local folder because direct download from Hugging Face was blocked in my setup.
+The baseline pipeline uses dense retrieval with `sentence-transformers/all-MiniLM-L6-v2`. I downloaded the model and loaded it from the local folder.
 
 - Embedding model: `sentence-transformers/all-MiniLM-L6-v2`
 - Embedding dimension: 384
