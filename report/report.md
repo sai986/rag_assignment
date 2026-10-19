@@ -109,6 +109,8 @@ Question: ...
 
 The same template is used for both pipelines. Only the three retrieved passages change.
 
+The full prompts used for the selected failure queries are saved in `outputs/llm_prompts.csv`, and the generated answers are saved in `outputs/llm_answers.csv`. I keep the report focused on the rank shifts and answer differences rather than pasting the full prompt and full answer text for every case.
+
 ## 5. Failure Query Analysis
 
 This section records retrieval-level rank shifts and compares the answers generated from the baseline and re-ranked contexts.
@@ -154,6 +156,11 @@ Answer comparison:
 | Baseline answer | The answer covered risk mitigation, model evaluation, cybersecurity, incident reporting, and general systemic-risk duties. It was useful, but it mainly relied on recital/background chunks and did not clearly separate direct obligations from supporting explanation. |
 | Re-ranked answer | The answer was more focused on provider obligations and compliance mechanisms. It included risk assessment and mitigation, incident reporting, cybersecurity, codes of practice, harmonised standards, and alternative means of demonstrating compliance. |
 
+Short generated-answer comparison:
+
+- Baseline answer: emphasised risk mitigation, model evaluations, cybersecurity protection, incident reporting, and general obligations.
+- Re-ranked answer: retained the main obligations but added clearer compliance mechanisms such as codes of practice, harmonised standards, and alternative means of demonstrating compliance.
+
 Observation: re-ranking improved the context by moving C0119 from baseline rank 7 to rank 1 and C0070 from baseline rank 10 to rank 3. The generated answer became more specific about compliance routes and obligations rather than only summarising background rationale.
 
 ### Failure Query 2
@@ -181,6 +188,11 @@ Answer comparison:
 | Re-ranked context | Uses chunks C0019, C0083, C0020. |
 | Baseline answer | The answer correctly listed permitted situations, authorisation, urgency handling, scope limits, impact assessment, and national-law requirements. However, one baseline top-3 chunk was about post-remote biometric identification rather than the real-time public-space use asked in the query. |
 | Re-ranked answer | The answer focused more tightly on real-time remote biometric identification in publicly accessible spaces. It included fundamental-rights assessment, EU database registration, prior authorisation, urgency exceptions, national-law permission, and notifications. |
+
+Short generated-answer comparison:
+
+- Baseline answer: gave a broadly correct answer, but mixed in less central context about post-remote biometric identification.
+- Re-ranked answer: more directly addressed real-time use in public spaces and included the operational conditions promoted by re-ranking: prior authorisation, urgency handling, EU database registration, notifications, and Member State national-law permission.
 
 Observation: re-ranking promoted C0083 from baseline rank 4 to rank 2 and C0020 from baseline rank 6 to rank 3. This replaced less central baseline context with chunks that directly addressed authorisation, registration, urgency exceptions, and Member State national-law conditions.
 
