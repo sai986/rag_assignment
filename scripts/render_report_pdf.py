@@ -5,7 +5,7 @@ from reportlab.lib import colors
 from reportlab.lib.pagesizes import A4
 from reportlab.lib.styles import ParagraphStyle, getSampleStyleSheet
 from reportlab.lib.units import inch
-from reportlab.platypus import Paragraph, Preformatted, SimpleDocTemplate, Spacer, Table, TableStyle
+from reportlab.platypus import KeepTogether, PageBreak, Paragraph, Preformatted, SimpleDocTemplate, Spacer, Table, TableStyle
 
 
 REPORT_MD = Path("report/report.md")
@@ -97,7 +97,7 @@ def markdown_to_story(text: str, available_width: float) -> list:
                 code_lines.append(lines[i])
                 i += 1
             i += 1
-            story.append(Preformatted("\n".join(code_lines), styles["CodeCustom"]))
+            story.append(KeepTogether([Preformatted("\n".join(code_lines), styles["CodeCustom"])]))
             continue
 
         if line.startswith("# "):
@@ -135,6 +135,28 @@ def markdown_to_story(text: str, available_width: float) -> list:
         if re.match(r"^\d+\.\s+", line):
             story.append(Paragraph(inline_markdown(line.strip()), styles["BulletCustom"]))
             i += 1
+            continue
+
+        next_content = i + 1
+        while next_content < len(lines) and not lines[next_content].strip():
+            next_content += 1
+
+        if line.strip() == "The answer-generation prompt template is:" and next_content < len(lines) and lines[next_content].startswith("```"):
+            code_lines = []
+            i = next_content + 1
+            while i < len(lines) and not lines[i].startswith("```"):
+                code_lines.append(lines[i])
+                i += 1
+            i += 1
+            story.append(PageBreak())
+            story.append(
+                KeepTogether(
+                    [
+                        Paragraph(inline_markdown(line.strip()), styles["BodyCustom"]),
+                        Preformatted("\n".join(code_lines), styles["CodeCustom"]),
+                    ]
+                )
+            )
             continue
 
         paragraph = [line.strip()]
