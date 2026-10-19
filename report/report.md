@@ -31,7 +31,6 @@ I also removed repeated header and footer text from pages. Things like journal m
 I used the full document. I did not remove the recital section because some questions can still be answered better when the background explanation is available. At the same time, I did not treat each page as one chunk. Page breaks are mostly a PDF layout thing, so I used page numbers as metadata only.
 
 The chunking logic was:
-
 1. Extract cleaned text for each page.
 2. Join the pages into one continuous document stream.
 3. Keep track of the page number for every word.
@@ -41,7 +40,6 @@ The chunking logic was:
 7. Add 100-word overlap between chunks, including when the overlap crosses a page boundary.
 
 The current chunking output is:
-
 | Metric | Value |
 |---|---:|
 | Total words | 90,406 |
