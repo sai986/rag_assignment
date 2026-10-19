@@ -4,41 +4,41 @@ GitHub repository: https://github.com/sai986/rag_assignment/
 
 ## 1. Document and Setup
 
-This experiment uses the **EU Artificial Intelligence Act** as the source document. I chose this document because it is long, text-heavy, and rule-based. It contains definitions, obligations, exceptions, prohibited practices, high-risk AI categories, transparency duties, penalties, and annexes. These characteristics make it suitable for testing retrieval failures in a RAG pipeline.
+For this assignment I used the **EU Artificial Intelligence Act** as the source document. I picked this document mainly because it is long enough, mostly text-based, and also has a lot of rule-like content. It has definitions, obligations, exceptions, prohibited practices, high-risk AI rules, transparency requirements, penalties, and annexes. So it felt like a good document to test where normal retrieval works and where it can miss more specific context.
 
-The PDF has 144 pages. Text was extracted page by page and each page number was preserved so that retrieved chunks can be traced back to the original document.
+The PDF has 144 pages. I extracted the text page by page and kept the page number as metadata. This was important because later, when a chunk is retrieved, I can still trace it back to the original page in the PDF.
 
 ### Extraction Notes
 
-The first extraction attempt used `pypdf`, but it produced spacing artifacts in many words. For example, the visible PDF text:
+Initially I tried `pypdf`, but the extracted text had spacing issues inside words. For example, in the PDF the first line is clean:
 
 ```text
 REGULATION (EU) 2024/1689 OF THE EUROPEAN PARLIAMENT AND OF THE COUNCIL
 ```
 
-was extracted as:
+But `pypdf` extracted it like this:
 
 ```text
 REGUL A TION (EU) 2024/1689 OF THE EUR OPEAN P ARLIAMENT AND OF THE CO UNCIL
 ```
 
-This would hurt retrieval because important terms such as `artificial`, `systems`, `risk`, and `Article` could be split incorrectly. I switched to PyMuPDF, which extracted the same pages with normal word spacing.
+This is a problem for retrieval because words like `artificial`, `system`, `risk`, or `Article` can get split wrongly. That would affect embeddings and matching. So I switched to PyMuPDF, and the extracted text was much cleaner.
 
-Repeated page header and footer text, such as publication metadata and page markers, was removed from the cleaned text because it does not help answer user questions and would add noise to embeddings. Legal citations that are part of the document text were kept.
+I also removed repeated header and footer text from pages. Things like journal metadata, page markers, and ELI footer lines were not useful for answering questions. They would only add noise to the chunks and embeddings. I kept legal citations because those are part of the actual document content.
 
 ## 2. Chunking Strategy
 
-I used the full document rather than filtering out the recital section. Pages were treated as metadata, not as hard chunk boundaries.
+I used the full document. I did not remove the recital section because some questions can still be answered better when the background explanation is available. At the same time, I did not treat each page as one chunk. Page breaks are mostly a PDF layout thing, so I used page numbers as metadata only.
 
-The chunking process was:
+The chunking logic was:
 
 1. Extract cleaned text for each page.
-2. Concatenate pages into a continuous document stream.
-3. Preserve each word's source page number.
-4. Prefer legal structure boundaries such as `CHAPTER`, `SECTION`, `Article`, `ANNEX`, numbered clauses, and list items.
-5. Build chunks with target size around 600 words.
-6. Enforce a maximum chunk size around 900 words.
-7. Add 100-word overlap between chunks, including across page boundaries.
+2. Join the pages into one continuous document stream.
+3. Keep track of the page number for every word.
+4. Prefer legal structure boundaries like `CHAPTER`, `SECTION`, `Article`, `ANNEX`, numbered clauses, and list items.
+5. Build chunks around 600 words where possible.
+6. Keep the maximum chunk size around 900 words.
+7. Add 100-word overlap between chunks, including when the overlap crosses a page boundary.
 
 The current chunking output is:
 
@@ -54,45 +54,45 @@ The current chunking output is:
 | Chunks above 900 words | 0 |
 | Page-spanning chunks | 143 |
 
-This chunking setup is intentionally conservative. Legal rules often include conditions and exceptions, so larger chunks help preserve enough context. If later retrieval results are too broad or noisy, I will revisit this setting and test smaller chunks.
+I kept the chunks slightly large on purpose. Since this is a legal document, one rule often depends on conditions and exceptions nearby. Smaller chunks may retrieve only part of the rule and miss the qualification. One open item is that if the final answers look too broad, I can revisit this and try smaller chunks.
 
 ## 3. Architecture Comparison
 
-A bi-encoder embeds the query and each chunk independently. Since the chunk embeddings do not depend on the query, they can be computed once and reused. At query time, only the query embedding is computed, and chunks are ranked using cosine similarity.
+The baseline system uses a bi-encoder. In this setup, the query and each chunk are embedded separately. The chunk embeddings can be computed once and saved. At query time, only the query embedding is computed, and then cosine similarity is used to rank the chunks.
 
-A cross-encoder reads the query and candidate chunk together. This is more expensive because the model must run once for every `(query, chunk)` pair. The advantage is that the model can compare the query and chunk directly through token-level attention. In this assignment, I use the cross-encoder only after the bi-encoder has produced a shortlist of 10 candidates.
+The re-ranking system adds a cross-encoder after this first retrieval step. A cross-encoder reads the query and candidate chunk together, so it can judge the match more directly. The tradeoff is that it is slower, because it has to run once for every query-chunk pair. Because of that, I only use it on the top 10 candidates from the bi-encoder, not on the whole document.
 
 ## 4. Retrieval Pipelines
 
-Both pipelines use the same chunk corpus. The only difference is whether the top 10 dense-retrieval candidates are used directly or re-ranked before selecting the final top 3 context chunks.
+Both pipelines use the same extracted text and the same chunks. The difference is only in what happens after the first dense retrieval step.
 
 ### Pipeline 1: Baseline Retrieval
 
-The baseline retrieval pipeline uses a dense bi-encoder. I used `sentence-transformers/all-MiniLM-L6-v2`, loaded from a local folder because direct model download from Hugging Face was blocked by the local network/certificate setup.
+The baseline pipeline uses dense retrieval with `sentence-transformers/all-MiniLM-L6-v2`. I loaded the model from a local folder because direct download from Hugging Face was blocked in my setup.
 
 - Embedding model: `sentence-transformers/all-MiniLM-L6-v2`
 - Embedding dimension: 384
 - Similarity function: cosine similarity
 - Number of candidates retrieved: top 10
-- Number of chunks to be sent to the LLM: top 3
+- Number of chunks sent to the LLM: top 3
 - Chunk embeddings file: `outputs/chunk_embeddings.npy`
 - Baseline retrieval output: `outputs/baseline_retrieval_results.csv`
 
 ### Pipeline 2: Advanced Re-Ranking
 
-The advanced pipeline starts from the same top 10 baseline candidates. It then scores each `(query, chunk)` pair with a cross-encoder and sorts the candidates by the cross-encoder score.
+The re-ranking pipeline starts with the same top 10 candidates from dense retrieval. Then it scores each `(query, chunk)` pair using a cross-encoder and sorts the candidates again based on that score.
 
 - Initial candidates: top 10 from baseline dense retrieval
 - Cross-encoder model: `cross-encoder/ms-marco-MiniLM-L-6-v2`
 - Model source: local folder `models/ms-marco-MiniLM-L-6-v2`
-- Re-ranked chunks to be sent to LLM: top 3
+- Re-ranked chunks sent to the LLM: top 3
 - Re-ranked output: `outputs/reranked_results.csv`
 - Latency output: `outputs/latency_results.csv`
 - Prompt output: `outputs/llm_prompts.csv`
 - Prompt structure: same prompt is used for baseline and re-ranked answer generation
 - Answer output: `outputs/llm_answers.csv`
 
-Initial re-ranking over 8 candidate queries showed that the cross-encoder sometimes promoted chunks originally ranked outside the baseline top 3. In the current run, some chunks in the re-ranked top 3 originally appeared at baseline ranks 4, 5, 6, 7, and 10.
+In the first run over 8 candidate queries, the cross-encoder moved some useful chunks from outside the baseline top 3 into the final top 3. In a few cases, chunks that were originally at baseline rank 4, 5, 6, 7, or even 10 moved into the re-ranked top 3.
 
 The answer-generation prompt template is:
 
@@ -109,13 +109,13 @@ Context:
 Question: ...
 ```
 
-The same template is used for both pipelines. Only the three retrieved passages change.
+I used the same prompt template for both pipelines. Only the three retrieved passages changed.
 
-The full prompts used for the selected failure queries are saved in `outputs/llm_prompts.csv`, and the generated answers are saved in `outputs/llm_answers.csv`. I keep the report focused on the rank shifts and answer differences rather than pasting the full prompt and full answer text for every case.
+The full prompts for the selected failure queries are saved in `outputs/llm_prompts.csv`, and the generated answers are saved in `outputs/llm_answers.csv`. In the report I am not pasting every full prompt and answer because that becomes too long. Instead I am focusing on the rank changes and answer-level differences.
 
 ## 5. Failure Query Analysis
 
-This section records retrieval-level rank shifts and compares the answers generated from the baseline and re-ranked contexts.
+Here I looked for cases where the baseline retrieval found relevant material somewhere in the top 10, but the most useful chunks were not always in the top 3. These are good cases to check whether re-ranking helps.
 
 ### Candidate Rank Shifts
 
@@ -130,7 +130,7 @@ This section records retrieval-level rank shifts and compares the answers genera
 | When can law enforcement use real-time remote biometric identification in public spaces? | C0020 | 6 | 3 | 11-11 | +3 |
 | What criteria are used to designate general-purpose AI models with systemic risk? | C0116 | 5 | 2 | 83-84 | +3 |
 
-The strongest early candidates are the general-purpose AI/systemic-risk queries because relevant chunks moved from ranks 7 and 10 into the re-ranked top 3. These are useful because the baseline top 3 would not include all of those promoted chunks.
+The strongest examples were the general-purpose AI/systemic-risk questions. For those, relevant chunks moved from ranks 7 and 10 into the final top 3. That matters because only the top 3 chunks are sent to the LLM.
 
 ### Failure Query 1
 
@@ -140,14 +140,14 @@ What obligations apply to providers of general-purpose AI models with systemic r
 
 Why this query is difficult:
 
-The document has several nearby topics around general-purpose AI models: definitions, copyright/training summaries, systemic-risk classification, provider duties, and downstream documentation. A dense retriever can retrieve semantically related general-purpose AI chunks without necessarily ranking the specific obligations highest.
+The document has multiple related sections around general-purpose AI models. Some chunks talk about definitions, some about systemic-risk classification, some about copyright/training summaries, and some about provider obligations. Dense retrieval can find generally related chunks, but it may not always put the exact obligation chunks at the top.
 
 Rank shift:
 
 | Chunk | Baseline Rank | Re-ranked Rank | Page Range | Reason |
 |---|---:|---:|---|---|
-| C0119 | 7 | 1 | 86-87 | Promoted to the top by the cross-encoder for the systemic-risk obligations query. |
-| C0070 | 10 | 3 | 41-42 | Moved into the re-ranked top 3 despite being last in the baseline top 10. |
+| C0119 | 7 | 1 | 86-87 | Promoted to the top for the systemic-risk obligations query. |
+| C0070 | 10 | 3 | 41-42 | Moved into the final top 3 even though it was last in the baseline top 10. |
 
 Answer comparison:
 
@@ -155,15 +155,15 @@ Answer comparison:
 |---|---|
 | Baseline context | Uses chunks C0052, C0050, C0053. |
 | Re-ranked context | Uses chunks C0119, C0053, C0070. |
-| Baseline answer | The answer covered risk mitigation, model evaluation, cybersecurity, incident reporting, and general systemic-risk duties. It was useful, but it mainly relied on recital/background chunks and did not clearly separate direct obligations from supporting explanation. |
-| Re-ranked answer | The answer was more focused on provider obligations and compliance mechanisms. It included risk assessment and mitigation, incident reporting, cybersecurity, codes of practice, harmonised standards, and alternative means of demonstrating compliance. |
+| Baseline answer | The answer covered risk mitigation, model evaluation, cybersecurity, incident reporting, and general systemic-risk duties. It was useful, but it mostly sounded like a summary of background and broad duties. |
+| Re-ranked answer | The answer was more directly about provider obligations and compliance. It included risk assessment and mitigation, incident reporting, cybersecurity, codes of practice, harmonised standards, and alternative ways of showing compliance. |
 
 Short generated-answer comparison:
 
-- Baseline answer: emphasised risk mitigation, model evaluations, cybersecurity protection, incident reporting, and general obligations.
-- Re-ranked answer: retained the main obligations but added clearer compliance mechanisms such as codes of practice, harmonised standards, and alternative means of demonstrating compliance.
+- Baseline answer: covered the main duties like risk mitigation, model evaluations, cybersecurity, and incident reporting.
+- Re-ranked answer: kept those points, but added clearer compliance mechanisms such as codes of practice, harmonised standards, and alternative means of demonstrating compliance.
 
-Observation: re-ranking improved the context by moving C0119 from baseline rank 7 to rank 1 and C0070 from baseline rank 10 to rank 3. The generated answer became more specific about compliance routes and obligations rather than only summarising background rationale.
+My observation: re-ranking helped here. It moved C0119 from baseline rank 7 to rank 1 and C0070 from baseline rank 10 to rank 3. Because of that, the final answer became more specific and less like a general background summary.
 
 ### Failure Query 2
 
@@ -173,14 +173,14 @@ When can law enforcement use real-time remote biometric identification in public
 
 Why this query is difficult:
 
-This query depends on conditions and exceptions. The relevant evidence is spread across recitals and operative provisions, including strict necessity, authorisation, fundamental rights assessment, national rules, and permitted objectives. Dense retrieval found related biometric chunks, but re-ranking changed which specific condition chunks were placed in the top 3.
+This question depends on exceptions and conditions. The answer is not just one simple sentence. It involves strict necessity, authorisation, fundamental-rights assessment, national law, urgency handling, and the allowed objectives. Dense retrieval found biometric-related chunks, but not all of them were equally useful for this exact question.
 
 Rank shift:
 
 | Chunk | Baseline Rank | Re-ranked Rank | Page Range | Reason |
 |---|---:|---:|---|---|
-| C0083 | 4 | 2 | 52-53 | Contains operative authorisation and assessment requirements; promoted into top 3. |
-| C0020 | 6 | 3 | 11-11 | Contains Member State authorisation/national-law condition; promoted into top 3. |
+| C0083 | 4 | 2 | 52-53 | Contains operative authorisation and assessment requirements, so it was moved into top 3. |
+| C0020 | 6 | 3 | 11-11 | Contains Member State authorisation and national-law condition, so it was moved into top 3. |
 
 Answer comparison:
 
@@ -188,15 +188,15 @@ Answer comparison:
 |---|---|
 | Baseline context | Uses chunks C0019, C0017, C0045. |
 | Re-ranked context | Uses chunks C0019, C0083, C0020. |
-| Baseline answer | The answer correctly listed permitted situations, authorisation, urgency handling, scope limits, impact assessment, and national-law requirements. However, one baseline top-3 chunk was about post-remote biometric identification rather than the real-time public-space use asked in the query. |
-| Re-ranked answer | The answer focused more tightly on real-time remote biometric identification in publicly accessible spaces. It included fundamental-rights assessment, EU database registration, prior authorisation, urgency exceptions, national-law permission, and notifications. |
+| Baseline answer | The answer was broadly correct. It mentioned permitted situations, authorisation, urgency handling, scope limits, impact assessment, and national-law requirements. But one of the baseline chunks was more about post-remote biometric identification, not the real-time public-space use asked in the question. |
+| Re-ranked answer | The answer stayed closer to real-time remote biometric identification in publicly accessible spaces. It included fundamental-rights assessment, EU database registration, prior authorisation, urgency exceptions, national-law permission, and notifications. |
 
 Short generated-answer comparison:
 
-- Baseline answer: gave a broadly correct answer, but mixed in less central context about post-remote biometric identification.
-- Re-ranked answer: more directly addressed real-time use in public spaces and included the operational conditions promoted by re-ranking: prior authorisation, urgency handling, EU database registration, notifications, and Member State national-law permission.
+- Baseline answer: mostly correct, but mixed in some less central context about post-remote biometric identification.
+- Re-ranked answer: more directly answered the real-time public-space use case and included the key conditions promoted by re-ranking.
 
-Observation: re-ranking promoted C0083 from baseline rank 4 to rank 2 and C0020 from baseline rank 6 to rank 3. This replaced less central baseline context with chunks that directly addressed authorisation, registration, urgency exceptions, and Member State national-law conditions.
+My observation: re-ranking helped by promoting C0083 from baseline rank 4 to rank 2 and C0020 from baseline rank 6 to rank 3. This replaced less central baseline context with chunks that better matched the exact wording of the question.
 
 ## 6. Latency Profiling
 
@@ -215,14 +215,24 @@ For the two selected failure queries:
 | GPAI systemic-risk obligations | 0.012 s | 1.624 s | 1.637 s |
 | Real-time biometric identification by law enforcement | 0.013 s | 1.514 s | 1.527 s |
 
-For the two selected failure queries, the prompts have been exported to `outputs/llm_prompts.csv`. The notebook also creates an `outputs/llm_answers.csv` template. The same LLM and decoding settings should be used for both the baseline and re-ranked prompts. API keys or provider credentials should not be stored in the notebook, report, or repository.
+The latency difference is clear. Baseline retrieval is almost instant for this document. Re-ranking adds around 1.5 seconds per query because the cross-encoder has to score query-chunk pairs one by one. For this assignment that is acceptable because I am only re-ranking 10 candidates.
+
+The prompts for the two selected failure queries are exported to `outputs/llm_prompts.csv`. The generated answers are in `outputs/llm_answers.csv`. I have not stored any API keys or provider credentials in the notebook, report, or repository.
 
 ## 7. Scaling Question
 
-We do not run a cross-encoder over the entire collection from the start because the cross-encoder must process each query and chunk together. Its score depends on the interaction between the query tokens and the chunk tokens, so the document-side computation cannot be fully precomputed in the same way as bi-encoder embeddings.
+We should not run a cross-encoder on the full collection directly. The reason is that a cross-encoder cannot fully precompute document embeddings like a bi-encoder. Its score depends on the query and chunk together, so every new query needs fresh scoring for every candidate chunk.
 
-The practical pattern is therefore two-stage retrieval. First, the bi-encoder cheaply searches the full chunk collection and produces a candidate set with good recall. Then the cross-encoder spends more compute on only that shortlist to improve precision. In this experiment, dense retrieval over 168 chunks took about 0.010 seconds per query, while cross-encoder re-ranking of only 10 candidates took about 1.419 seconds per query.
+So the practical design is a two-stage pipeline:
+
+1. Use the bi-encoder to search the full chunk collection quickly.
+2. Take only a small candidate set, here top 10.
+3. Use the cross-encoder only on those candidates to improve the final ordering.
+
+In this experiment, dense retrieval over 168 chunks took about 0.010 seconds per query. Re-ranking only 10 candidates took about 1.419 seconds per query. This shows why the cross-encoder is useful as a second-stage model, but not as the first search step.
 
 ## 8. Conclusion
 
-The two-stage pipeline improved precision on the selected difficult queries. Dense retrieval was very fast and usually found relevant material somewhere in the top 10, but important chunks could remain outside the top 3. Cross-encoder re-ranking added about 1.5 seconds per query for 10 candidates, but it promoted more directly useful chunks into the context sent to the LLM. The result was stronger grounding for queries involving systemic-risk obligations and law-enforcement exceptions.
+Overall, the two-stage retrieval pipeline gave better context for the difficult queries I tested. The baseline retriever was very fast and usually found relevant chunks somewhere in the top 10. But in some cases, the best chunks were not in the top 3, and those are the only chunks sent to the LLM.
+
+The cross-encoder added extra latency, around 1.5 seconds per query for 10 candidates, but it improved the final context. For the systemic-risk obligations query and the law-enforcement biometric identification query, re-ranking moved more exact chunks into the top 3. That made the generated answers more specific and better grounded in the document.
