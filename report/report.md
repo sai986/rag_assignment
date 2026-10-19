@@ -1,5 +1,7 @@
 # Baseline Retrieval vs Cross-Encoder Re-Ranking for RAG
 
+GitHub repository: https://github.com/sai986/rag_assignment/
+
 ## 1. Document and Setup
 
 This experiment uses the **EU Artificial Intelligence Act** as the source document. I chose this document because it is long, text-heavy, and rule-based. It contains definitions, obligations, exceptions, prohibited practices, high-risk AI categories, transparency duties, penalties, and annexes. These characteristics make it suitable for testing retrieval failures in a RAG pipeline.
